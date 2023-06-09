@@ -22,6 +22,8 @@ import InboxIcon from "@mui/icons-material/MoveToInbox"
 import MailIcon from "@mui/icons-material/Mail"
 import { Avatar } from "@mui/material"
 import { useState } from "react"
+import viewConfig, { ViewItemConfig } from "../../config/view"
+import DashboardIcon from "@mui/icons-material/Dashboard"
 
 const drawerWidth = 240
 
@@ -51,7 +53,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }))
 
@@ -100,13 +101,14 @@ interface MainViewProps {
   }>
 }
 
-
 export default function MainView(props: MainViewProps) {
   const { colorModeContext } = props
   const theme = useTheme()
   const colorMode = React.useContext(colorModeContext)
   const [open, setOpen] = React.useState(false)
-  const [selectDynamicComponent, setSelectDynamicComponent] = useState("Inbox")
+  const [selectDynamicComponent, setSelectDynamicComponent] = useState(
+    viewConfig.viewList[0].component
+  )
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -116,8 +118,8 @@ export default function MainView(props: MainViewProps) {
     setOpen(false)
   }
 
-  const onClickNavigation = (text: string) => {
-    setSelectDynamicComponent(text)
+  const onClickNavigation = (view: ViewItemConfig) => {
+    setSelectDynamicComponent(view.component)
   }
 
   return (
@@ -181,15 +183,15 @@ export default function MainView(props: MainViewProps) {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+          {viewConfig.viewList.map((view, index) => (
+            <ListItem key={view.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
-                onClick={() => onClickNavigation(text)}
+                onClick={() => onClickNavigation(view)}
               >
                 <ListItemIcon
                   sx={{
@@ -198,16 +200,19 @@ export default function MainView(props: MainViewProps) {
                     justifyContent: "center",
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText
+                  primary={view.navbarTitle}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
       <main style={{ width: "100%", height: "100%", paddingTop: 56 }}>
-        {selectDynamicComponent}
+        {selectDynamicComponent()}
       </main>
     </Box>
   )

@@ -6,7 +6,12 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#2f3241",
+      symbolColor: "#74b1be",
+      height: 24,
+    },
     webPreferences: {
       nodeIntegration: true,
     },
